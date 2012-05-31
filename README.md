@@ -40,5 +40,5 @@ Fingerprint a file
 Fingerprint STDIN
 ```
 % cat file.test | java -jar rabinfingerprint.jar -p 3DE9DD57CA448B
-```
 43A39C59491F
+```
