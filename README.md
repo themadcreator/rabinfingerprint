@@ -17,7 +17,7 @@ Polynomial polynomial = Polynomial.createIrreducible(53);
 RabinFingerprintLong rabin = new RabinFingerprintLong(polynomial);
 		
 // Push bytes from file stream
-rabin.pushBytes(ByteStreams.toByteArray(new FileInputStream("file.txt")));
+rabin.pushBytes(ByteStreams.toByteArray(new FileInputStream("file.test")));
 		
 // Get fingerprint value and output
 System.out.println(Long.toString(rabin.getFingerprintLong(), 16));
@@ -34,9 +34,11 @@ Generate a new irreducible polynomial
 Fingerprint a file
 ```
 % java -jar rabinfingerprint.jar -p 3DE9DD57CA448B file.test
+43A39C59491F /[path to file]/file.test
 ```
 
 Fingerprint STDIN
 ```
 % cat file.test | java -jar rabinfingerprint.jar -p 3DE9DD57CA448B
+43A39C59491F
 ```
