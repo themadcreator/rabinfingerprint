@@ -18,7 +18,6 @@ public class Main {
 	public void fingerprintFiles(List<String> paths, Polynomial p) throws FileNotFoundException,
 			IOException {
 		final RabinFingerprintLong rabin = new RabinFingerprintLong(p);
-		System.out.println(p.toHexString());
 		for (String path : paths) {
 			File file = new File(path);
 			if (file.exists()) {
@@ -35,7 +34,6 @@ public class Main {
 
 	public void fingerprintStdin(Polynomial p) throws IOException {
 		final RabinFingerprintLong rabin = new RabinFingerprintLong(p);
-		System.out.println(p.toHexString());
 		rabin.pushBytes(ByteStreams.toByteArray(System.in));
 		System.out.println(String.format("%X", rabin.getFingerprintLong()));
 	}
@@ -90,7 +88,7 @@ public class Main {
 		RabinFingerprintLong rabin = new RabinFingerprintLong(polynomial);
 		
 		// Push bytes from file stream
-		rabin.pushBytes(ByteStreams.toByteArray(new FileInputStream("file.txt")));
+		rabin.pushBytes(ByteStreams.toByteArray(new FileInputStream("file.test")));
 		
 		// Get fingerprint value and output
 		System.out.println(Long.toString(rabin.getFingerprintLong(), 16));
