@@ -1,0 +1,24 @@
+java -jar rabinfingerprint.jar -h
+  Prints this message
+
+java -jar rabinfingerprint.jar -polygen n
+  Generates a new irreducible polynomial of degree n. N must be less than 62. 53 is a good choice.
+  Output is:
+    [polynomial]
+
+java -jar rabinfingerprint.jar -p xxxxxx file.test
+  Generates the fingerprint using the rabin fingerprint method using the specified irreducible polynomial (in hexadecimal) on the specified file.
+  Output for fingerprints are:
+    [polynomial]
+    [fingerprint 0] [file 0]
+    [fingerprint 1] [file 1]
+    [fingerprint 2] [file 2]
+    ...
+
+cat file.test | java -jar rabinfingerprint.jar
+  Generates the fingerprint of stdin using the rabin fingerprint method using a randomly generated irreducible polynomial
+  Output for fingerprint is:
+    [polynomial]
+    [fingerprint of stdin]
+  
+  
