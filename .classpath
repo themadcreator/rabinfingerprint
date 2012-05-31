@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/*" kind="src" path="src-common"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="src-commontest"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="src-handprint"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="src-handprinttest"/>
+	<classpathentry excluding="**/.svn/*" kind="src" path="src-commandline"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/guava-12.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.10.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

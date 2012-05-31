@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="build" name="Create rabinfingerprint jar">
+
+	<property name="lib.home" value="lib" />
+
+	<target name="compile">
+		<javac destdir="bin">
+			<src path="src-common:src-commontest:src-handprint:src-handprinttest:src-commandline" />
+			<classpath>
+				<pathelement location="${lib.home}/guava-12.0.jar" />
+				<pathelement location="${lib.home}/junit-4.10.jar" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<jar destfile="rabinfingerprint.jar" duplicate="preserve">
+			<manifest>
+				<attribute name="Main-Class" value="org.rabinfingerprint.Main" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="bin" />
+            <zipfileset src="${lib.home}/guava-12.0.jar"/>
+            <zipfileset src="${lib.home}/junit-4.10.jar"/>
+		</jar>
+	</target>
+</project>
