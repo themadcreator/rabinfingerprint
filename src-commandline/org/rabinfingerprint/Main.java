@@ -62,7 +62,6 @@ public class Main {
 
 	private Main(ArgsModel model) {
 		this.model = model;
-
 	}
 
 	private void run() throws Exception {
@@ -80,6 +79,21 @@ public class Main {
 			generatePolynomial(model.degree);
 			break;
 		}
+	}
+	
+	public static void codeSample() throws FileNotFoundException, IOException {
+		// Create new random irreducible polynomial
+		// These can also be created from Longs or hex Strings
+		Polynomial polynomial = Polynomial.createIrreducible(53);
+		
+		// Create a fingerprint object
+		RabinFingerprintLong rabin = new RabinFingerprintLong(polynomial);
+		
+		// Push bytes from file stream
+		rabin.pushBytes(ByteStreams.toByteArray(new FileInputStream("file.txt")));
+		
+		// Get fingerprint value and output
+		System.out.println(Long.toString(rabin.getFingerprintLong(), 16));
 	}
 
 	public static void main(String[] args) {
