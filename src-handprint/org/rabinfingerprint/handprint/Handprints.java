@@ -2,7 +2,7 @@ package org.rabinfingerprint.handprint;
 
 import java.io.InputStream;
 
-import org.rabinfingerprint.handprint.FingerFactory.ByteMaskBoundaryDetectoryStrategy;
+import org.rabinfingerprint.handprint.FingerFactory.ChunkBoundaryDetector;
 import org.rabinfingerprint.polynomial.Polynomial;
 
 public class Handprints {
@@ -20,10 +20,9 @@ public class Handprints {
 	public static class HandPrintFactory {
 		private final Polynomial p;
 		private int fingersPerHand = 10;
-		private long bytesPerWindow = 8;
-		private long chunkBoundaryMask = 0xFFF;
-		private long chunkPattern = 0xABC;
-
+		private long bytesPerWindow = 48;
+		private ChunkBoundaryDetector boundaryDetector = BoundaryDetectors.DEFAULT_BOUNDARY_DETECTOR;
+		
 		public HandPrintFactory(Polynomial p) {
 			this.p = p;
 		}
@@ -33,21 +32,15 @@ public class Handprints {
 			return this;
 		}
 
-		public HandPrintFactory chunkBoundaryMask(long chunkBoundaryMask) {
-			this.chunkBoundaryMask = chunkBoundaryMask;
-			return this;
-		}
-
-		public HandPrintFactory chunkPattern(long chunkPattern) {
-			this.chunkPattern = chunkPattern;
+		public HandPrintFactory setBoundaryDetector(ChunkBoundaryDetector boundaryDetector) {
+			this.boundaryDetector = boundaryDetector;
 			return this;
 		}
 		
 		public Handprint newHandprint(InputStream is){
 			return new Handprint(is,
 					fingersPerHand,
-							new FingerFactory(p, bytesPerWindow,
-									new ByteMaskBoundaryDetectoryStrategy(chunkBoundaryMask, chunkPattern)));
+					new FingerFactory(p, bytesPerWindow, boundaryDetector));
 		}
 	}
 }

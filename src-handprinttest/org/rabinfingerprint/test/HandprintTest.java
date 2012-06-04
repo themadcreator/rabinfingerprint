@@ -22,9 +22,9 @@ public class HandprintTest extends TestCase {
 		Handprint hand3 = factory.newHandprint(sims.get(2));
 		Handprint hand4 = factory.newHandprint(sims.get(3));
 
-		assertTrue(Math.abs(0.80 - hand1.getSimilarity(hand2)) < 0.05);
-		assertTrue(Math.abs(0.80 - hand1.getSimilarity(hand3)) < 0.05);
-		assertTrue(Math.abs(0.80 - hand1.getSimilarity(hand4)) < 0.05);
+		assertTrue(Math.abs(0.70 - hand1.getSimilarity(hand2)) < 0.05);
+		assertTrue(Math.abs(0.70 - hand1.getSimilarity(hand3)) < 0.05);
+		assertTrue(Math.abs(0.70 - hand1.getSimilarity(hand4)) < 0.05);
 		
 		List<InputStream> diffs = TestDataGenerator.getDifferentRandomBytes(3);
 		Handprint hand5 = factory.newHandprint(diffs.get(0));

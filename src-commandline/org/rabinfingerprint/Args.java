@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.rabinfingerprint.Args.ArgsModel.InputMode;
 import org.rabinfingerprint.Args.ArgsModel.Mode;
+import org.rabinfingerprint.polynomial.Polynomials;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -43,16 +45,22 @@ public class Args {
 	
 	public static class ArgsModel{
 		public static enum Mode{
-			HELP, POLYGEN, FINGERPRINT_FILES, FINGERPRINT_STDIN;
+			HELP, POLYGEN, FINGERPRINT, HANDPRINT;
+		}
+
+		public static enum InputMode {
+			STDIN, FILES;
 		}
 		
-		public Mode mode = Mode.HELP;
+		public Mode mode = null;
+		public InputMode inputModel = InputMode.STDIN;
 		public int degree = 53;
-		public long polynomial = 0;
+		public int fingerPerHand = 10;
+		public long polynomial = Polynomials.DEFAULT_POLYNOMIAL_LONG;
 		public List<String> unflagged = Lists.newArrayList();
 	}
 	
-	List<Arg> args = Lists.newArrayList();
+	private final List<Arg> args = Lists.newArrayList();
 	
 	public Args() {
 		args.add(new Arg(0, "-h", "--help") {
@@ -75,11 +83,21 @@ public class Args {
 		args.add(new Arg(1, "-p") {
 			@Override
 			public void parse(ArgsModel model, String[] strs) throws ArgParseException {
-				model.mode = Mode.FINGERPRINT_FILES;
 				try {
 					model.polynomial = Long.parseLong(strs[0], 16);
 				} catch (NumberFormatException e) {
 					throw new ArgParseException("Could not parse polynomial.");
+				}
+			}
+		});
+		args.add(new Arg(1, "-hand") {
+			@Override
+			public void parse(ArgsModel model, String[] strs) throws ArgParseException {
+				model.mode = Mode.HANDPRINT;
+				try {
+					model.fingerPerHand = Integer.parseInt(strs[0]);
+				} catch (NumberFormatException e) {
+					throw new ArgParseException("Could not fingers-per-hand parameter.");
 				}
 			}
 		});
@@ -99,17 +117,23 @@ public class Args {
 					break;
 				}
 			}
+			
 			if(!flagged){
 				model.unflagged.addAll(Lists.newArrayList(Arrays.copyOfRange(strs, i, strs.length)));
 				break;
 			}
-			
 		}
 		
-		if(model.mode == Mode.FINGERPRINT_FILES && model.unflagged.size() == 0){
-			model.mode = Mode.FINGERPRINT_STDIN;
+		if (model.mode == null) {
+			model.mode = Mode.FINGERPRINT;
 		}
-		
+
+		if (model.unflagged.size() == 0) {
+			model.inputModel = InputMode.STDIN;
+		} else {
+			model.inputModel = InputMode.FILES;
+		}
+
 		return model;
 	}
 }

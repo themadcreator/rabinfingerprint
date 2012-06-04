@@ -1,6 +1,8 @@
 package org.rabinfingerprint.polynomial;
 
 public class Polynomials {
+	public static final long DEFAULT_POLYNOMIAL_LONG = 0x375AD14A67FC7BL;
+	
 	/**
 	 * Generates a handful of irreducible polynomials of the specified degree.
 	 */

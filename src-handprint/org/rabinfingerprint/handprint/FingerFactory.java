@@ -3,39 +3,26 @@ package org.rabinfingerprint.handprint;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.rabinfingerprint.datastructures.Interval;
 import org.rabinfingerprint.fingerprint.RabinFingerprintLong;
 import org.rabinfingerprint.fingerprint.RabinFingerprintLongWindowed;
 import org.rabinfingerprint.polynomial.Polynomial;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.io.ByteStreams;
 
 public class FingerFactory {
-	public static interface BoundaryDetectorStrategy{
+	public static interface ChunkBoundaryDetector {
 		public boolean isBoundary(RabinFingerprintLong fingerprint);
 	}
-	
-	public static class ByteMaskBoundaryDetectoryStrategy implements BoundaryDetectorStrategy {
-		private final long chunkBoundaryMask;
-		private final long chunkPattern;
 
-		public ByteMaskBoundaryDetectoryStrategy(long chunkBoundaryMask, long chunkPattern) {
-			this.chunkBoundaryMask = chunkBoundaryMask;
-			this.chunkPattern = chunkPattern;
-		}
-
-		public boolean isBoundary(RabinFingerprintLong fingerprint) {
-			return (fingerprint.getFingerprintLong() & chunkBoundaryMask) == chunkPattern;
-		}
+	public static interface ChunkVisitor {
+		public void visit(long fingerprint, long chunkStart, long chunkEnd);
 	}
 	
 	private final RabinFingerprintLong finger;
 	private final RabinFingerprintLongWindowed fingerWindow;
-	private final BoundaryDetectorStrategy boundaryDetector;
+	private final ChunkBoundaryDetector boundaryDetector;
 
-	public FingerFactory(Polynomial p, long bytesPerWindow, BoundaryDetectorStrategy boundaryDetector) {
+	public FingerFactory(Polynomial p, long bytesPerWindow, ChunkBoundaryDetector boundaryDetector) {
 		this.finger = new RabinFingerprintLong(p);
 		this.fingerWindow = new RabinFingerprintLongWindowed(p, bytesPerWindow);
 		this.boundaryDetector = boundaryDetector;
@@ -51,15 +38,14 @@ public class FingerFactory {
 
 	/**
 	 * Fingerprint the file into chunks called "Fingers". The chunk boundaries
-	 * are determined using a windowed fingerprinter such as
-	 * {@link RabinFingerprintLongWindowed}. This guarantees that a long chunk
-	 * of data will always contains some fingers that hash to same value. This
-	 * is the KEY to the utility of the handprinting scheme for file similarity.
-	 * Even if you re-arrange a file's contents or corrupt parts of it, the hand
-	 * print will be able to find all the parts that are similar in a very
-	 * efficient manner.
+	 * are determined using a windowed fingerprinter
+	 * {@link RabinFingerprintLongWindowed}.
+	 * 
+	 * The chunk detector is position independent. Therefore, even if a file is
+	 * rearranged or partially corrupted, the untouched chunks can be
+	 * efficiently discovered.
 	 */
-	public Multimap<Long, Interval> getAllFingers(InputStream is) throws IOException {
+	public void getChunkFingerprints(InputStream is, ChunkVisitor visitor) throws IOException {
 		// windowing fingerprinter for finding chunk boundaries. this is only
 		// reset at the beginning of the file
 		final RabinFingerprintLong window = newWindowedFingerprint();
@@ -76,8 +62,6 @@ public class FingerFactory {
 		 * ensure that, for example, a one byte offset at the beginning of the
 		 * file won't effect the chunk boundaries
 		 */
-		final Multimap<Long, Interval> chunks = ArrayListMultimap.create();
-		is.reset();
 		for (byte b : ByteStreams.toByteArray(is)) {
 			// push byte into fingerprints
 			window.pushByte(b);
@@ -91,7 +75,7 @@ public class FingerFactory {
 			 * chunk fingerprinter.
 			 */
 			if (boundaryDetector.isBoundary(window)) {
-				chunks.put(finger.getFingerprintLong(), new Interval(chunkStart, chunkEnd));
+				visitor.visit(finger.getFingerprintLong(), chunkStart, chunkEnd);
 				finger.reset();
 				
 				// store last chunk offset
@@ -100,19 +84,14 @@ public class FingerFactory {
 		}
 
 		// final chunk
-		chunks.put(finger.getFingerprintLong(), new Interval(chunkStart, chunkEnd));
-		return chunks;
+		visitor.visit(finger.getFingerprintLong(), chunkStart, chunkEnd);
 	}
 
 	/**
-	 * Rapidly fingerprint an entire file's contents.
-	 * 
-	 * We use the term "Palm" to describe the fingerprint of the entire file,
-	 * instead of chunks, which are referred to as the file's "Fingers".
+	 * Rapidly fingerprint an entire stream's contents.
 	 */
-	public long getPalm(InputStream is) throws IOException {
+	public long getFullFingerprint(InputStream is) throws IOException {
 		final RabinFingerprintLong finger = newFingerprint();
-		is.reset();
 		finger.pushBytes(ByteStreams.toByteArray(is));
 		return finger.getFingerprintLong();
 	}

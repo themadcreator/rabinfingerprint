@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import org.rabinfingerprint.datastructures.Interval;
+import org.rabinfingerprint.handprint.FingerFactory.ChunkVisitor;
 import org.rabinfingerprint.handprint.Handprints.HandprintException;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -38,7 +39,7 @@ public class Handprint {
 		if (palm != null)
 			return palm;
 		try {
-			palm = factory.getPalm(stream);
+			palm = factory.getFullFingerprint(stream);
 		} catch (IOException e) {
 			throw new HandprintException("Error while computing fingerprints", e);
 		}
@@ -49,7 +50,12 @@ public class Handprint {
 		if (fingers != null)
 			return fingers;
 		try {
-			fingers = factory.getAllFingers(stream);
+			fingers = ArrayListMultimap.create();
+			factory.getChunkFingerprints(stream, new ChunkVisitor() {
+				public void visit(long fingerprint, long chunkStart, long chunkEnd) {
+					fingers.put(fingerprint, new Interval(chunkStart, chunkEnd));
+				}
+			});
 		} catch (IOException e) {
 			throw new HandprintException("Error while computing fingerprints", e);
 		}

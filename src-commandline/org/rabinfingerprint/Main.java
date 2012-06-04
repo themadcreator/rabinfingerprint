@@ -8,7 +8,11 @@ import java.util.List;
 
 import org.rabinfingerprint.Args.ArgParseException;
 import org.rabinfingerprint.Args.ArgsModel;
+import org.rabinfingerprint.Args.ArgsModel.InputMode;
 import org.rabinfingerprint.fingerprint.RabinFingerprintLong;
+import org.rabinfingerprint.handprint.Handprint;
+import org.rabinfingerprint.handprint.Handprints;
+import org.rabinfingerprint.handprint.Handprints.HandPrintFactory;
 import org.rabinfingerprint.polynomial.Polynomial;
 
 import com.google.common.io.ByteStreams;
@@ -38,6 +42,31 @@ public class Main {
 		System.out.println(String.format("%X", rabin.getFingerprintLong()));
 	}
 
+	public void handprintStdin(Polynomial p) throws IOException {
+		HandPrintFactory factory = Handprints.newFactory(p);
+		Handprint hand = factory.newHandprint(System.in);
+		for (Long finger : hand.getHandFingers().keySet()) {
+			System.out.println(String.format("%X", finger));
+		}
+	}
+
+	public void handprintFiles(List<String> paths, Polynomial p) throws IOException {
+		HandPrintFactory factory = Handprints.newFactory(p);
+		for (String path : paths) {
+			File file = new File(path);
+			if (file.exists()) {
+				Handprint hand = factory.newHandprint(new FileInputStream(file));
+				for (Long finger : hand.getHandFingers().keySet()) {
+					System.out.println(String.format("%X", finger));
+				}
+				System.out.flush();
+			} else {
+				System.err.print(String.format("Could not find file %s", path));
+				System.err.flush();
+			}
+		}
+	}
+
 	public void generatePolynomial(int deg) {
 		Polynomial p = Polynomial.createIrreducible(deg);
 		System.out.println(p.toHexString());
@@ -64,11 +93,19 @@ public class Main {
 
 	private void run() throws Exception {
 		switch (model.mode) {
-		case FINGERPRINT_FILES:
-			fingerprintFiles(model.unflagged, checkPolynomial(model.polynomial));
+		case FINGERPRINT:
+			if (model.inputModel == InputMode.STDIN) {
+				fingerprintStdin(checkPolynomial(model.polynomial));
+			} else {
+				fingerprintFiles(model.unflagged, checkPolynomial(model.polynomial));
+			}
 			break;
-		case FINGERPRINT_STDIN:
-			fingerprintStdin(checkPolynomial(model.polynomial));
+		case HANDPRINT:
+			if (model.inputModel == InputMode.STDIN) {
+				handprintStdin(checkPolynomial(model.polynomial));
+			} else {
+				handprintFiles(model.unflagged, checkPolynomial(model.polynomial));
+			}
 			break;
 		case HELP:
 			printUsage();
@@ -79,21 +116,6 @@ public class Main {
 		}
 	}
 	
-	public static void codeSample() throws FileNotFoundException, IOException {
-		// Create new random irreducible polynomial
-		// These can also be created from Longs or hex Strings
-		Polynomial polynomial = Polynomial.createIrreducible(53);
-		
-		// Create a fingerprint object
-		RabinFingerprintLong rabin = new RabinFingerprintLong(polynomial);
-		
-		// Push bytes from file stream
-		rabin.pushBytes(ByteStreams.toByteArray(new FileInputStream("file.test")));
-		
-		// Get fingerprint value and output
-		System.out.println(Long.toString(rabin.getFingerprintLong(), 16));
-	}
-
 	public static void main(String[] args) {
 		try {
 			try {
