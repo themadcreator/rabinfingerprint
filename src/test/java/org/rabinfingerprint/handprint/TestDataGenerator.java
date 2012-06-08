@@ -1,4 +1,4 @@
-package org.rabinfingerprint.test;
+package org.rabinfingerprint.handprint;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
