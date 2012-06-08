@@ -1,4 +1,4 @@
-package org.rabinfingerprint.test;
+package org.rabinfingerprint.fingerprint;
 
 
 import java.util.Random;

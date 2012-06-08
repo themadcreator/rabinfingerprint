@@ -1,4 +1,4 @@
-package org.rabinfingerprint.test;
+package org.rabinfingerprint.polynomial;
 
 public class Stats {
 	private long count = 0L;
