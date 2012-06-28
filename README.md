@@ -39,9 +39,16 @@ for (byte b : ByteStreams.toByteArray(new FileInputStream("file.test"))) {
 }
 ```
 
+### Building ###
+This project uses Maven for dependency management. To build this project's runnable jar, sources and javadoc, run this command:
+
+```
+% mvn clean install
+```
+
 ### Command line ###
 
-[Full Usage](https://github.com/themadcreator/rabinfingerprint/blob/master/src-commandline/org/rabinfingerprint/usage.txt)
+[Full Usage](https://github.com/themadcreator/rabinfingerprint/blob/master/src/main/resources/usage.txt)
 
 Generate a new irreducible polynomial
 ```
