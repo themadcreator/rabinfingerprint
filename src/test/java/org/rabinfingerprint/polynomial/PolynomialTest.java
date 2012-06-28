@@ -1,4 +1,4 @@
-package org.rabinfingerprint.test;
+package org.rabinfingerprint.polynomial;
 
 import junit.framework.TestCase;
 
