@@ -73,7 +73,7 @@ public class Main {
 	}
 
 	public void printUsage() throws IOException {
-		ByteStreams.copy(getClass().getResourceAsStream("usage.txt"), System.out);
+		ByteStreams.copy(getClass().getResourceAsStream("/usage.txt"), System.out);
 	}
 
 	public Polynomial checkPolynomial(Long l) throws ArgParseException {
