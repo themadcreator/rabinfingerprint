@@ -40,6 +40,8 @@ for (byte b : ByteStreams.toByteArray(new FileInputStream("file.test"))) {
 ```
 
 ### Building ###
+[![Build Status](https://buildhive.cloudbees.com/job/themadcreator/job/rabinfingerprint/badge/icon)](https://buildhive.cloudbees.com/job/themadcreator/job/rabinfingerprint/)
+
 This project uses Maven for dependency management. To build this project's runnable jar, sources and javadoc, run this command:
 
 ```
