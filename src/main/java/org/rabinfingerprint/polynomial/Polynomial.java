@@ -371,7 +371,7 @@ public class Polynomial implements Arithmetic< Polynomial >, Comparable< Polynom
 			for (BigInteger i = BigInteger.ONE; i.compareTo(degree) <= 0; i = i.add(BigInteger.ONE)) {
 				term = term.shiftLeft(1);
 			}
-			b.add(term);
+			b = b.add(term);
 		}
 		return b;
 	}
