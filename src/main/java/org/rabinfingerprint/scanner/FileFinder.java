@@ -15,13 +15,16 @@ public class FileFinder {
 		if (!directory.isDirectory()) directory = directory.getParentFile();
 		if (!directory.getName().matches(directoryPattern)) return;
 		visitor.visitDirectory(directory);
-		final ArrayList<File> childDirectories = new ArrayList<File>();
-		for (File file : directory.listFiles()) {
-			if (file.isDirectory()) {
-				childDirectories.add(file);
-			} else if (file.isFile()) {
-				if (!file.getName().matches(filePattern)) continue;
-				visitor.visitFile(file);
+		final ArrayList<File> childDirectories = new ArrayList<File>();		
+		File[] files = directory.listFiles();
+		if(files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					childDirectories.add(file);
+				} else if (file.isFile()) {
+					if (!file.getName().matches(filePattern)) continue;
+					visitor.visitFile(file);
+				}
 			}
 		}
 		if (recursively) {
@@ -36,9 +39,12 @@ public class FileFinder {
 		if (!directory.getName().matches(pattern)) return;
 		visitor.visitDirectory(directory);
 		final ArrayList<File> childDirectories = new ArrayList<File>();
-		for (File file : directory.listFiles()) {
-			if (file.isDirectory()) {
-				childDirectories.add(file);
+		File[] files = directory.listFiles();
+		if(files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					childDirectories.add(file);
+				}
 			}
 		}
 		if (recursively) {

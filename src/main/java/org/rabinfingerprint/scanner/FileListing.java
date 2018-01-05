@@ -10,13 +10,16 @@ public class FileListing {
 
 	public static List<File> getFileListing( File directory ) throws FileNotFoundException {
 		// get files
-		ArrayList<File> files = new ArrayList<File>( Arrays.<File>asList( directory.listFiles() ) );
-		ArrayList<File> result = new ArrayList<File>( files );
+		File[] files = directory.listFiles();
+		ArrayList<File> result = new ArrayList<File>();
+		if( files != null ){		
+			result.addAll( Arrays.<File>asList( files ) );
 
-		// recurse
-		for ( File file : files ) {
-			if ( !file.isDirectory() ) continue;
-			result.addAll( getFileListing( file ) );
+			// recurse
+			for ( File file : files ) {
+				if ( !file.isDirectory() ) continue;
+				result.addAll( getFileListing( file ) );
+			}
 		}
 
 		// return
